@@ -111,7 +111,7 @@ fun main(args: Array<String>) {
 }
 
 /** Builds a fully registered MCP server. HTTP mode builds one per session. */
-private fun buildServer(calendarService: CalendarService): Server {
+private fun buildServer(calendarService: CalendarService?): Server {
     val server = Server(
         serverInfo = Implementation(
             name = "icloud-calendar-mcp",
