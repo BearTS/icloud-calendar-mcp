@@ -1,4 +1,4 @@
-# Build the fat JAR and a minimal JRE
+# Build the fat JAR and a trimmed JRE (jdeps can't analyse this JAR, so the module list is fixed)
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /src
 COPY . .
@@ -6,7 +6,7 @@ COPY . .
 RUN sed -i 's/^networkTimeout=.*/networkTimeout=120000/' gradle/wrapper/gradle-wrapper.properties \
  && (./gradlew fatJar --no-daemon -x test || ./gradlew fatJar --no-daemon -x test) \
  && cp build/libs/icloud-calendar-mcp-*-all.jar /app.jar \
- && jlink --add-modules "$(jdeps --ignore-missing-deps --multi-release 21 --print-module-deps /app.jar),jdk.crypto.ec,jdk.unsupported,java.naming" \
+ && jlink --add-modules java.se,jdk.unsupported,jdk.crypto.ec \
       --strip-debug --no-man-pages --no-header-files --compress=zip-6 --output /jre
 
 FROM debian:bookworm-slim
