@@ -85,6 +85,33 @@ fun main(args: Array<String>) {
         })
     }
 
+    if (httpModeRequested(args)) {
+        runHttpServer { buildServer(calendarService) }
+        return@runBlocking
+    }
+
+    val server = buildServer(calendarService)
+
+    // Start server with STDIO transport (for Claude Desktop)
+    val transport = StdioServerTransport(
+        input = System.`in`.asSource().buffered(),
+        output = System.out.asSink().buffered()
+    )
+    val session = server.createSession(transport)
+
+    // Keep the process alive until the transport closes
+    session.onClose {
+        // Session closed, process will exit
+    }
+
+    // Block until stdin is closed (transport handles read loop internally)
+    // The coroutine scope keeps the process alive while the session is active
+    kotlinx.coroutines.awaitCancellation()
+    }
+}
+
+/** Builds a fully registered MCP server. HTTP mode builds one per session. */
+private fun buildServer(calendarService: CalendarService): Server {
     val server = Server(
         serverInfo = Implementation(
             name = "icloud-calendar-mcp",
@@ -111,23 +138,7 @@ fun main(args: Array<String>) {
 
     // Register user-initiated prompt templates
     registerPrompts(server)
-
-    // Start server with STDIO transport (for Claude Desktop)
-    val transport = StdioServerTransport(
-        input = System.`in`.asSource().buffered(),
-        output = System.out.asSink().buffered()
-    )
-    val session = server.createSession(transport)
-
-    // Keep the process alive until the transport closes
-    session.onClose {
-        // Session closed, process will exit
-    }
-
-    // Block until stdin is closed (transport handles read loop internally)
-    // The coroutine scope keeps the process alive while the session is active
-    kotlinx.coroutines.awaitCancellation()
-    }
+    return server
 }
 
 /**

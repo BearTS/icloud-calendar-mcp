@@ -112,6 +112,17 @@ cd icloud-calendar-mcp
 java -jar build/libs/icloud-calendar-mcp-*-all.jar
 ```
 
+#### Option 5: Docker (HTTP)
+
+Serves MCP over Streamable HTTP at `/mcp`, for running on a server. `compose.yml` joins an existing external `pangolin` network and publishes no ports.
+
+```bash
+cp .env.example .env   # set ICLOUD_USERNAME, ICLOUD_PASSWORD, MCP_AUTH_TOKEN
+docker compose up -d --build
+```
+
+Clients send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server refuses to start in HTTP mode without a token. Without Docker, run `java -jar icloud-calendar-mcp-all.jar --http`. Optional env: `MCP_PORT` (8000), `MCP_HOST` (0.0.0.0), `MCP_ALLOWED_HOSTS` (comma-separated, enables DNS-rebinding protection). `GET /healthz` is unauthenticated.
+
 ### Configuration
 
 Set your iCloud credentials as environment variables:
