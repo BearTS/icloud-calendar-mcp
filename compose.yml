@@ -5,9 +5,9 @@ services:
     container_name: icloud-calendar-mcp
     restart: unless-stopped
     environment:
-      ICLOUD_USERNAME: ${ICLOUD_USERNAME:?set ICLOUD_USERNAME in .env}
-      ICLOUD_PASSWORD: ${ICLOUD_PASSWORD:?set ICLOUD_PASSWORD in .env}
-      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set MCP_AUTH_TOKEN in .env}
+      ICLOUD_USERNAME: ${ICLOUD_USERNAME:?ICLOUD_USERNAME is required}
+      ICLOUD_PASSWORD: ${ICLOUD_PASSWORD:?ICLOUD_PASSWORD is required}
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?MCP_AUTH_TOKEN is required}
     networks:
       - "pangolin"
 
